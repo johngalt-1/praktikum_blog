@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'war'
 }
 
 group = 'ru.yandex.praktikum'
@@ -9,7 +10,13 @@ repositories {
     mavenCentral()
 }
 
+war {
+    archiveFileName = 'blog.war'
+}
+
 dependencies {
+    implementation('org.springframework:spring-webmvc:6.2.1')
+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
