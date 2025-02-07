@@ -5,15 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import ru.yandex.praktikum.blog.config.DatabaseConfig;
-import ru.yandex.praktikum.blog.model.PostWithDetails;
 import ru.yandex.praktikum.blog.repo.DatabaseTest;
 import ru.yandex.praktikum.blog.repo.post.JdbcNativePostRepository;
-import ru.yandex.praktikum.blog.repo.post.PostRepository;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ContextHierarchy({
         @ContextConfiguration(name = "db", classes = DatabaseConfig.class),
@@ -24,28 +21,27 @@ class JdbcNativeTagRepositoryTest extends DatabaseTest {
     @Autowired
     TagRepository tagRepository;
 
-    @Autowired
-    PostRepository postRepository;
+    @Test
+    void findTagsByPostId() {
+        var tags = tagRepository.findTagsByPostId(1);
+        assertEquals(List.of("тег1", "тег2"), tags);
+    }
 
     @Test
     void savePostTags() {
-        PostWithDetails post = postRepository.findPostWithDetailsById(1).orElse(null);
-        assertNotNull(post);
-        assertEquals(List.of("тег1", "тег2"), post.getTags());
+        var tags = tagRepository.findTagsByPostId(1);
+        assertEquals(List.of("тег1", "тег2"), tags);
         tagRepository.savePostTags(1, List.of("тег3", "тег4"));
-        post = postRepository.findPostWithDetailsById(1).orElse(null);
-        assertNotNull(post);
-        assertEquals(List.of("тег1", "тег2", "тег3", "тег4"), post.getTags());
+        tags = tagRepository.findTagsByPostId(1);
+        assertEquals(List.of("тег1", "тег2", "тег3", "тег4"), tags);
     }
 
     @Test
     void deletePostTag() {
-        PostWithDetails post = postRepository.findPostWithDetailsById(1).orElse(null);
-        assertNotNull(post);
-        assertEquals(List.of("тег1", "тег2"), post.getTags());
+        var tags = tagRepository.findTagsByPostId(1);
+        assertEquals(List.of("тег1", "тег2"), tags);
         tagRepository.deletePostTag(1, "тег1");
-        post = postRepository.findPostWithDetailsById(1).orElse(null);
-        assertNotNull(post);
-        assertEquals(List.of("тег2"), post.getTags());
+        tags = tagRepository.findTagsByPostId(1);
+        assertEquals(List.of("тег2"), tags);
     }
 }

@@ -15,6 +15,23 @@ public class JdbcNativeTagRepository implements TagRepository {
     }
 
     @Override
+    public List<String> findTagsByPostId(long postId) {
+        var query = String.format(
+                """
+                        SELECT post_id, tag
+                        FROM blog.post_tag
+                        WHERE post_id = %d
+                        """,
+                postId
+        );
+        return jdbcTemplate.query(
+                query,
+                (rs, rn) -> rs.getString("tag")
+        );
+    }
+
+
+    @Override
     public void savePostTags(long postId, List<String> tags) {
         jdbcTemplate.batchUpdate(
                 """
