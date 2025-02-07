@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
+import ru.yandex.praktikum.blog.DatabaseTest;
 import ru.yandex.praktikum.blog.config.DatabaseConfig;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
-import ru.yandex.praktikum.blog.repo.DatabaseTest;
 import ru.yandex.praktikum.blog.repo.post.JdbcNativePostRepository;
 import ru.yandex.praktikum.blog.repo.post.PostRepository;
 
@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class JdbcNativeLikeRepositoryTest extends DatabaseTest {
 
     @Autowired
-    LikeRepository likeRepository;
+    private LikeRepository likeRepository;
 
     @Autowired
-    PostRepository postRepository;
+    private PostRepository postRepository;
 
     @Test
     void savePostLike() {

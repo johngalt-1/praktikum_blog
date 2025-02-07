@@ -10,10 +10,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
+import ru.yandex.praktikum.blog.DatabaseTest;
 import ru.yandex.praktikum.blog.config.DatabaseConfig;
 import ru.yandex.praktikum.blog.model.Post;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
-import ru.yandex.praktikum.blog.repo.DatabaseTest;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

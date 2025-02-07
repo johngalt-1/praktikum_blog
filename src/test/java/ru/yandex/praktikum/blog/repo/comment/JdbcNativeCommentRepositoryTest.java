@@ -1,4 +1,4 @@
-package ru.yandex.praktikum.blog.repo.comment.post;
+package ru.yandex.praktikum.blog.repo.comment;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,11 +8,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
+import ru.yandex.praktikum.blog.DatabaseTest;
 import ru.yandex.praktikum.blog.config.DatabaseConfig;
 import ru.yandex.praktikum.blog.model.Comment;
-import ru.yandex.praktikum.blog.repo.DatabaseTest;
-import ru.yandex.praktikum.blog.repo.comment.CommentRepository;
-import ru.yandex.praktikum.blog.repo.comment.JdbcNativeCommentRepository;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -145,7 +143,7 @@ class JdbcNativeCommentRepositoryTest extends DatabaseTest {
         );
         commentRepository.deleteComment(comment);
         comment.setDeleted(true);
-        var foundComment =  commentRepository.findCommentById(1).orElse(null);
+        var foundComment = commentRepository.findCommentById(1).orElse(null);
         assertNotNull(foundComment);
         assertEqualComments(comment, foundComment);
     }

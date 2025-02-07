@@ -1,4 +1,4 @@
-package ru.yandex.praktikum.blog.repo;
+package ru.yandex.praktikum.blog;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +13,6 @@ import ru.yandex.praktikum.blog.config.DatabaseConfig;
 @ExtendWith(SpringExtension.class)
 @ContextHierarchy({
         @ContextConfiguration(name = "db", classes = DatabaseConfig.class),
-        @ContextConfiguration(name = "repo")
 })
 @TestPropertySource(locations = "classpath:properties/application.properties")
 public class DatabaseTest {
