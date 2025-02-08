@@ -1,5 +1,6 @@
 package ru.yandex.praktikum.blog;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,6 @@ public class DatabaseTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("DELETE FROM blog.comment");
-        jdbcTemplate.execute("DELETE FROM blog.post_like");
-        jdbcTemplate.execute("DELETE FROM blog.post_tag");
-        jdbcTemplate.execute("DELETE FROM blog.post");
-
         jdbcTemplate.execute(
                 """
                         INSERT INTO blog.post (id, title, text, images, creation_time, update_time, deleted)
@@ -67,5 +63,13 @@ public class DatabaseTest {
                             (4, '2025-02-07 14:00:00+00')
                         """
         );
+    }
+
+    @AfterEach
+    void clear() {
+        jdbcTemplate.execute("DELETE FROM blog.comment");
+        jdbcTemplate.execute("DELETE FROM blog.post_like");
+        jdbcTemplate.execute("DELETE FROM blog.post_tag");
+        jdbcTemplate.execute("DELETE FROM blog.post");
     }
 }
