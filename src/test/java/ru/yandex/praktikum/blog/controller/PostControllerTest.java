@@ -1,23 +1,11 @@
 package ru.yandex.praktikum.blog.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.context.ContextHierarchy;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.context.WebApplicationContext;
 import ru.yandex.praktikum.blog.config.ThymeleafConfiguration;
-import ru.yandex.praktikum.blog.service.comment.CommentService;
-import ru.yandex.praktikum.blog.service.post.PostService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,29 +15,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@ExtendWith(MockitoExtension.class)
-@ExtendWith(SpringExtension.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestConfig.class, ThymeleafConfiguration.class, PostController.class
+@ContextHierarchy({
+        @ContextConfiguration(name = "web", classes = {ControllersTestConfig.class, ThymeleafConfiguration.class}),
+        @ContextConfiguration(name = "controller", classes = PostController.class)
 })
-class PostControllerTest {
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    private PostService postService;
-
-    @Autowired
-    private CommentService commentService;
-
-    private MockMvc mockMvc;
-
-    @BeforeEach
-    void setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
-
+class PostControllerTest extends ControllerTest {
 
     @Test
     void getPost() throws Exception {
@@ -136,19 +106,5 @@ class PostControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/post/3"));
         verify(postService).likePost(3);
-    }
-}
-
-@Configuration
-class TestConfig {
-
-    @Bean
-    public PostService postService() {
-        return mock();
-    }
-
-    @Bean
-    public CommentService commentService() {
-        return mock();
     }
 }
