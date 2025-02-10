@@ -3,7 +3,8 @@ package ru.yandex.praktikum.blog.repo.tag;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Repository
 public class JdbcNativeTagRepository implements TagRepository {
@@ -15,7 +16,7 @@ public class JdbcNativeTagRepository implements TagRepository {
     }
 
     @Override
-    public List<String> findTagsByPostId(long postId) {
+    public Set<String> findTagsByPostId(long postId) {
         var query = String.format(
                 """
                         SELECT post_id, tag
@@ -24,15 +25,16 @@ public class JdbcNativeTagRepository implements TagRepository {
                         """,
                 postId
         );
-        return jdbcTemplate.query(
-                query,
-                (rs, rn) -> rs.getString("tag")
-        );
+        return new HashSet<>(
+                jdbcTemplate.query(
+                        query,
+                        (rs, rn) -> rs.getString("tag")
+                ));
     }
 
 
     @Override
-    public void savePostTags(long postId, List<String> tags) {
+    public void savePostTags(long postId, Set<String> tags) {
         jdbcTemplate.batchUpdate(
                 """
                         INSERT INTO blog.post_tag (post_id, tag)

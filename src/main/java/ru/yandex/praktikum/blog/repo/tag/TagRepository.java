@@ -1,11 +1,11 @@
 package ru.yandex.praktikum.blog.repo.tag;
 
-import java.util.List;
+import java.util.Set;
 
 public interface TagRepository {
-    List<String> findTagsByPostId(long postId);
+    Set<String> findTagsByPostId(long postId);
 
-    void savePostTags(long postId, List<String> tags);
+    void savePostTags(long postId, Set<String> tags);
 
     void deletePostTag(long postId, String tag);
 }

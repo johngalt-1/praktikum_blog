@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -259,7 +260,7 @@ public class JdbcNativePostRepository implements PostRepository {
                 ),
                 rs.getLong("comments_count"),
                 rs.getLong("likes_count"),
-                fromSqlArray(rs, "tags")
+                new HashSet<>(fromSqlArray(rs, "tags"))
         );
     }
 }

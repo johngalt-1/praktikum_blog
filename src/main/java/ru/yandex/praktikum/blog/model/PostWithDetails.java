@@ -1,14 +1,14 @@
 package ru.yandex.praktikum.blog.model;
 
-import java.util.List;
+import java.util.Set;
 
 public class PostWithDetails {
     private Post post;
     private long commentsCount;
     private long likesCount;
-    private List<String> tags;
+    private Set<String> tags;
 
-    public PostWithDetails(Post post, long commentsCount, long likesCount, List<String> tags) {
+    public PostWithDetails(Post post, long commentsCount, long likesCount, Set<String> tags) {
         this.post = post;
         this.commentsCount = commentsCount;
         this.likesCount = likesCount;
@@ -39,11 +39,11 @@ public class PostWithDetails {
         this.likesCount = likesCount;
     }
 
-    public List<String> getTags() {
+    public Set<String> getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(Set<String> tags) {
         this.tags = tags;
     }
 }

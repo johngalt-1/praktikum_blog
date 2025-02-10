@@ -18,6 +18,7 @@ import ru.yandex.praktikum.blog.model.PostWithDetails;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
@@ -51,7 +52,7 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
                 ),
                 2,
                 2,
-                List.of("тег1", "тег2")
+                Set.of("тег1", "тег2")
         );
 
         SECOND_POST = new PostWithDetails(
@@ -66,7 +67,7 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
                 ),
                 0,
                 0,
-                List.of("тег1")
+                Set.of("тег1")
         );
 
         THIRD_POST = new PostWithDetails(
@@ -81,7 +82,7 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
                 ),
                 0,
                 1,
-                List.of()
+                Set.of()
         );
 
         DELETED_POST = new PostWithDetails(
@@ -96,7 +97,7 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
                 ),
                 1,
                 1,
-                List.of("тег2")
+                Set.of("тег2")
         );
     }
 

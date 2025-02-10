@@ -8,7 +8,7 @@ import ru.yandex.praktikum.blog.DatabaseTest;
 import ru.yandex.praktikum.blog.config.DatabaseConfig;
 import ru.yandex.praktikum.blog.repo.post.JdbcNativePostRepository;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,24 +24,24 @@ class JdbcNativeTagRepositoryTest extends DatabaseTest {
     @Test
     void findTagsByPostId() {
         var tags = tagRepository.findTagsByPostId(1);
-        assertEquals(List.of("тег1", "тег2"), tags);
+        assertEquals(Set.of("тег1", "тег2"), tags);
     }
 
     @Test
     void savePostTags() {
         var tags = tagRepository.findTagsByPostId(1);
-        assertEquals(List.of("тег1", "тег2"), tags);
-        tagRepository.savePostTags(1, List.of("тег3", "тег4"));
+        assertEquals(Set.of("тег1", "тег2"), tags);
+        tagRepository.savePostTags(1, Set.of("тег3", "тег4"));
         tags = tagRepository.findTagsByPostId(1);
-        assertEquals(List.of("тег1", "тег2", "тег3", "тег4"), tags);
+        assertEquals(Set.of("тег1", "тег2", "тег3", "тег4"), tags);
     }
 
     @Test
     void deletePostTag() {
         var tags = tagRepository.findTagsByPostId(1);
-        assertEquals(List.of("тег1", "тег2"), tags);
+        assertEquals(Set.of("тег1", "тег2"), tags);
         tagRepository.deletePostTag(1, "тег1");
         tags = tagRepository.findTagsByPostId(1);
-        assertEquals(List.of("тег2"), tags);
+        assertEquals(Set.of("тег2"), tags);
     }
 }

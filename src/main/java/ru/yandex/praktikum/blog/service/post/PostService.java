@@ -11,7 +11,10 @@ import ru.yandex.praktikum.blog.repo.like.LikeRepository;
 import ru.yandex.praktikum.blog.repo.post.PostRepository;
 import ru.yandex.praktikum.blog.repo.tag.TagRepository;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class PostService {
@@ -48,7 +51,7 @@ public class PostService {
         return postRepository.findPostWithDetailsById(id);
     }
 
-    public long savePost(Post post, List<String> tags) {
+    public long savePost(Post post, Set<String> tags) {
         var postId = transactionTemplate.execute(t -> {
             var id = postRepository.savePost(post);
             tagRepository.savePostTags(id, tags);
@@ -81,7 +84,7 @@ public class PostService {
         tagsToAdd.removeAll(tagsToDelete);
         tagsToDelete.removeAll(tags);
 
-        tagRepository.savePostTags(postId, tagsToAdd.stream().toList());
+        tagRepository.savePostTags(postId, tagsToAdd);
         tagsToDelete.forEach(tag -> tagRepository.deletePostTag(postId, tag));
     }
 }

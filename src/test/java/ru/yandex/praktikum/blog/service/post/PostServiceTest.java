@@ -100,7 +100,7 @@ class PostServiceTest extends DatabaseTest {
                 OffsetDateTime.of(2025, 2, 7, 16, 5, 1, 0, ZoneOffset.UTC),
                 false
         );
-        var tags = List.of("тег", "ещё_тег");
+        var tags = Set.of("тег", "ещё_тег");
         var id = postService.savePost(post, tags);
 
         var foundPostWithDetails = postService.findPostWithDetailsById(id);
@@ -122,7 +122,7 @@ class PostServiceTest extends DatabaseTest {
         postWithDetails = postService.findPostWithDetailsById(1);
         assertTrue(postWithDetails.isPresent());
         post = postWithDetails.get().getPost();
-        assertEquals(List.of("тег2", "тег3"), postWithDetails.get().getTags());
+        assertEquals(Set.of("тег2", "тег3"), postWithDetails.get().getTags());
         assertEquals(List.of("image1.jpg", "image3.png"), post.getImages());
     }
 
