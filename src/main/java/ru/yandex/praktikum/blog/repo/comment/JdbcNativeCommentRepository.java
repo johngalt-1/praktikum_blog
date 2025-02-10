@@ -91,20 +91,18 @@ public class JdbcNativeCommentRepository implements CommentRepository {
     }
 
     @Override
-    public long saveComment(Comment comment) {
+    public long saveComment(long postId, String text) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         PreparedStatementCreator creator = connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     """
                             INSERT INTO blog.comment (post_id, text, creation_time, update_time, deleted)
-                            VALUES (?, ?, ?, ?, false)
+                            VALUES (?, ?, now(), now(), false)
                             """,
                     Statement.RETURN_GENERATED_KEYS
             );
-            ps.setLong(1, comment.getPostId());
-            ps.setString(2, comment.getText());
-            ps.setObject(3, comment.getCreationTime());
-            ps.setObject(4, comment.getUpdateTime());
+            ps.setLong(1, postId);
+            ps.setString(2, text);
             return ps;
         };
         jdbcTemplate.update(creator, keyHolder);
@@ -113,32 +111,30 @@ public class JdbcNativeCommentRepository implements CommentRepository {
     }
 
     @Override
-    public void updateComment(Comment comment) {
+    public void updateComment(long commentId, String text) {
         jdbcTemplate.update(
                 """
                         UPDATE blog.comment
-                        SET text = ?, update_time = ?
+                        SET text = ?, update_time = now()
                         WHERE id = ?
                         """,
                 ps -> {
-                    ps.setString(1, comment.getText());
-                    ps.setObject(2, comment.getUpdateTime());
-                    ps.setLong(3, comment.getId());
+                    ps.setString(1, text);
+                    ps.setLong(2, commentId);
                 }
         );
     }
 
     @Override
-    public void deleteComment(Comment comment) {
+    public void deleteComment(long commentId) {
         jdbcTemplate.update(
                 """
                         UPDATE blog.comment
-                        SET update_time = ?, deleted = true
+                        SET update_time = now(), deleted = true
                         WHERE id = ?
                         """,
                 ps -> {
-                    ps.setObject(1, comment.getUpdateTime());
-                    ps.setLong(2, comment.getId());
+                    ps.setLong(1, commentId);
                 }
         );
     }

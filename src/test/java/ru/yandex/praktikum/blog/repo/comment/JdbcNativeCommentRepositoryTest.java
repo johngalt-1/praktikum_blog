@@ -92,69 +92,46 @@ class JdbcNativeCommentRepositoryTest extends DatabaseTest {
             assertTrue(comment.isEmpty());
         } else {
             assertTrue(comment.isPresent());
-            assertEqualComments(expected, comment.get());
+            assertEquals(expected.getId(), comment.get().getId());
+            assertEquals(expected.getPostId(), comment.get().getPostId());
+            assertEquals(expected.getText(), comment.get().getText());
         }
     }
 
     @Test
     void savePost() {
-        clear();
+        jdbcTemplate.update("DELETE FROM blog.comment");
 
-        var comment = new Comment(
-                0,
-                3,
-                "Новый коммент",
-                OffsetDateTime.of(2025, 2, 7, 18, 0, 0, 0, ZoneOffset.UTC),
-                OffsetDateTime.of(2025, 2, 7, 18, 5, 0, 0, ZoneOffset.UTC),
-                false
-        );
-        long id = commentRepository.saveComment(comment);
-        comment.setId(id);
+        var timestamp = OffsetDateTime.now();
+        long id = commentRepository.saveComment(3, "Новый коммент");
         var foundComment = commentRepository.findCommentById(id).orElse(null);
         assertNotNull(foundComment);
-        assertEqualComments(comment, foundComment);
+        assertEquals("Новый коммент", foundComment.getText());
+        assertEquals(3, foundComment.getPostId());
+        assertTrue(foundComment.getCreationTime().isAfter(timestamp));
+        assertTrue(foundComment.getUpdateTime().isAfter(timestamp));
     }
 
     @Test
     void updatePost() {
-        var comment = new Comment(
-                1,
-                1,
-                "Первый комментарий с правками",
-                OffsetDateTime.of(2025, 2, 7, 13, 10, 0, 0, ZoneOffset.UTC),
-                OffsetDateTime.of(2025, 2, 7, 19, 10, 0, 0, ZoneOffset.UTC),
-                false
-        );
-        commentRepository.updateComment(comment);
+        var timestamp = OffsetDateTime.now();
+        commentRepository.updateComment(1, "Первый комментарий с правками");
         var foundComment = commentRepository.findCommentById(1).orElse(null);
         assertNotNull(foundComment);
-        assertEqualComments(comment, foundComment);
+        assertEquals("Первый комментарий с правками", foundComment.getText());
+        assertTrue(foundComment.getCreationTime().isBefore(timestamp));
+        assertTrue(foundComment.getUpdateTime().isAfter(timestamp));
     }
 
     @Test
     void deletePost() {
-        var comment = new Comment(
-                1,
-                1,
-                "Первый комментарий",
-                OffsetDateTime.of(2025, 2, 7, 13, 10, 0, 0, ZoneOffset.UTC),
-                OffsetDateTime.of(2025, 2, 7, 19, 10, 0, 0, ZoneOffset.UTC),
-                false
-        );
-        commentRepository.deleteComment(comment);
-        comment.setDeleted(true);
+        var timestamp = OffsetDateTime.now();
+        commentRepository.deleteComment(1);
         var foundComment = commentRepository.findCommentById(1).orElse(null);
         assertNotNull(foundComment);
-        assertEqualComments(comment, foundComment);
-    }
-
-    private void assertEqualComments(Comment first, Comment second) {
-        assertEquals(first.getId(), second.getId());
-        assertEquals(first.getPostId(), second.getPostId());
-        assertEquals(first.getText(), second.getText());
-        assertEquals(first.getCreationTime(), second.getCreationTime());
-        assertEquals(first.getUpdateTime(), second.getUpdateTime());
-        assertEquals(first.isDeleted(), second.isDeleted());
+        assertTrue(foundComment.isDeleted());
+        assertTrue(foundComment.getCreationTime().isBefore(timestamp));
+        assertTrue(foundComment.getUpdateTime().isAfter(timestamp));
     }
 
     private static Stream<Arguments> commentsByPostId() {

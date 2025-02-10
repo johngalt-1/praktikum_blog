@@ -11,9 +11,7 @@ import java.util.Optional;
 public class CommentService {
     private final CommentRepository commentRepository;
 
-    public CommentService(
-            CommentRepository commentRepository
-    ) {
+    public CommentService(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
     }
 
@@ -25,15 +23,15 @@ public class CommentService {
         return commentRepository.findCommentById(id);
     }
 
-    public long saveComment(Comment comment) {
-        return commentRepository.saveComment(comment);
+    public long saveComment(long postId, String text) {
+        return commentRepository.saveComment(postId, text);
     }
 
-    public void updateComment(Comment comment) {
-        commentRepository.updateComment(comment);
+    public void updateComment(long commentId, String text) {
+        commentRepository.updateComment(commentId, text);
     }
 
-    public void deleteComment(Comment comment) {
-        commentRepository.deleteComment(comment);
+    public void deleteComment(long commentId) {
+        commentRepository.deleteComment(commentId);
     }
 }

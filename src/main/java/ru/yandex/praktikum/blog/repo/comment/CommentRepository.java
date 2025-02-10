@@ -13,9 +13,9 @@ public interface CommentRepository {
     @NonNull
     Optional<Comment> findCommentById(long id);
 
-    long saveComment(Comment comment);
+    long saveComment(long postId, String text);
 
-    void updateComment(Comment comment);
+    void updateComment(long commentId, String text);
 
-    void deleteComment(Comment comment);
+    void deleteComment(long commentId);
 }

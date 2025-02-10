@@ -11,13 +11,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import ru.yandex.praktikum.blog.DatabaseTest;
 import ru.yandex.praktikum.blog.config.DatabaseConfig;
-import ru.yandex.praktikum.blog.model.Post;
 import ru.yandex.praktikum.blog.repo.like.JdbcNativeLikeRepository;
 import ru.yandex.praktikum.blog.repo.post.JdbcNativePostRepository;
 import ru.yandex.praktikum.blog.repo.tag.JdbcNativeTagRepository;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -88,22 +85,13 @@ class PostServiceTest extends DatabaseTest {
     }
 
     @Test
-    void savePost() {
+    void createPost() {
         clear();
 
-        var post = new Post(
-                0,
-                "Новый пост",
-                "текст",
-                List.of("image5.jpg", "image6.png"),
-                OffsetDateTime.of(2025, 2, 7, 16, 0, 0, 0, ZoneOffset.UTC),
-                OffsetDateTime.of(2025, 2, 7, 16, 5, 1, 0, ZoneOffset.UTC),
-                false
-        );
         var tags = Set.of("тег", "ещё_тег");
-        var id = postService.savePost(post, tags);
-
+        var id = postService.createPost("Новый пост", "текст", List.of("image5.jpg", "image6.png"), tags);
         var foundPostWithDetails = postService.findPostWithDetailsById(id);
+
         assertTrue(foundPostWithDetails.isPresent());
         assertEquals(tags, foundPostWithDetails.get().getTags());
     }
@@ -113,29 +101,20 @@ class PostServiceTest extends DatabaseTest {
         var postWithDetails = postService.findPostWithDetailsById(1);
         assertTrue(postWithDetails.isPresent());
         var post = postWithDetails.get().getPost();
-        assertEquals(List.of("тег1", "тег2"), postWithDetails.get().getTags());
-        assertEquals(List.of("image1.jpg", "image2.jpg"), post.getImages());
 
-        post.setImages(List.of("image1.jpg", "image3.png"));
-        postService.updatePost(post, Set.of("тег2", "тег3"));
-
+        postService.updatePost(
+                1,
+                post.getTitle(),
+                post.getText(),
+                List.of("image1.jpg", "image3.png"),
+                Set.of("тег2", "тег3")
+        );
         postWithDetails = postService.findPostWithDetailsById(1);
+
         assertTrue(postWithDetails.isPresent());
         post = postWithDetails.get().getPost();
         assertEquals(Set.of("тег2", "тег3"), postWithDetails.get().getTags());
         assertEquals(List.of("image1.jpg", "image3.png"), post.getImages());
-    }
-
-    @Test
-    void likePost() {
-        var post = postService.findPostWithDetailsById(1);
-        assertTrue(post.isPresent());
-        assertEquals(2, post.get().getLikesCount());
-        postService.likePost(post.get().getPost());
-
-        post = postService.findPostWithDetailsById(1);
-        assertTrue(post.isPresent());
-        assertEquals(3, post.get().getLikesCount());
     }
 
     private static Stream<Arguments> pageArguments() {

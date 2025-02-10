@@ -159,20 +159,19 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
     void savePost() {
         clear();
 
-        var post = new Post(
-                0,
-                "Пятый пост",
-                "текст",
-                List.of("image5.jpg", "image6.png"),
-                OffsetDateTime.of(2025, 2, 7, 16, 0, 0, 0, ZoneOffset.UTC),
-                OffsetDateTime.of(2025, 2, 7, 16, 5, 1, 0, ZoneOffset.UTC),
-                false
-        );
-        long id = postRepository.savePost(post);
-        post.setId(id);
+        var title = "Пятый пост";
+        var text = "текст";
+        var images = List.of("image5.jpg", "image6.png");
+
+        var timestamp = OffsetDateTime.now();
+        long id = postRepository.savePost(title, text, images);
         var foundPost = postRepository.findPostWithDetailsById(id).orElse(null);
         assertNotNull(foundPost);
-        assertEqualPosts(post, foundPost.getPost());
+        assertEquals(text, foundPost.getPost().getText());
+        assertEquals(title, foundPost.getPost().getTitle());
+        assertEquals(images, foundPost.getPost().getImages());
+        assertTrue(foundPost.getPost().getCreationTime().isAfter(timestamp));
+        assertTrue(foundPost.getPost().getUpdateTime().isAfter(timestamp));
     }
 
     @Test
@@ -181,22 +180,27 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
         post.setText("новый текст");
         post.setTitle("Новый заголовок");
         post.setImages(List.of("image1.jpg", "image10.png"));
-        post.setUpdateTime(OffsetDateTime.of(2025, 2, 7, 17, 22, 1, 0, ZoneOffset.UTC));
-        postRepository.updatePost(post);
+
+        var timestamp = OffsetDateTime.now();
+        postRepository.updatePost(post.getId(), post.getTitle(), post.getText(), post.getImages());
         var foundPost = postRepository.findPostWithDetailsById(FIRST_POST.getPost().getId()).orElse(null);
         assertNotNull(foundPost);
         assertEqualPosts(post, foundPost.getPost());
+        assertTrue(foundPost.getPost().getCreationTime().isBefore(timestamp));
+        assertTrue(foundPost.getPost().getUpdateTime().isAfter(timestamp));
     }
 
     @Test
     void deletePost() {
         var post = FIRST_POST.getPost();
-        post.setUpdateTime(OffsetDateTime.of(2025, 2, 7, 17, 22, 1, 0, ZoneOffset.UTC));
-        postRepository.deletePost(post);
-        post.setDeleted(true);
+
+        var timestamp = OffsetDateTime.now();
+        postRepository.deletePost(post.getId());
         var foundPost = postRepository.findPostWithDetailsById(FIRST_POST.getPost().getId()).orElse(null);
         assertNotNull(foundPost);
-        assertEqualPosts(post, foundPost.getPost());
+        assertTrue(foundPost.getPost().isDeleted());
+        assertTrue(foundPost.getPost().getCreationTime().isBefore(timestamp));
+        assertTrue(foundPost.getPost().getUpdateTime().isAfter(timestamp));
     }
 
     private void assertEqualPosts(PostWithDetails first, PostWithDetails second) {
@@ -209,13 +213,9 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
     }
 
     private void assertEqualPosts(Post first, Post second) {
-        assertEquals(first.getId(), second.getId());
         assertEquals(first.getText(), second.getText());
         assertEquals(first.getTitle(), second.getTitle());
         assertEquals(first.getImages(), second.getImages());
-        assertEquals(first.getCreationTime(), second.getCreationTime());
-        assertEquals(first.getUpdateTime(), second.getUpdateTime());
-        assertEquals(first.isDeleted(), second.isDeleted());
     }
 
     private static Stream<Arguments> postsByTag() {

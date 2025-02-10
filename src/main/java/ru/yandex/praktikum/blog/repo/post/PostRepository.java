@@ -1,7 +1,6 @@
 package ru.yandex.praktikum.blog.repo.post;
 
 import org.springframework.lang.NonNull;
-import ru.yandex.praktikum.blog.model.Post;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
 
 import java.util.List;
@@ -21,9 +20,9 @@ public interface PostRepository {
 
     long countPosts();
 
-    long savePost(Post post);
+    long savePost(String title, String text, List<String> images);
 
-    void updatePost(Post post);
+    void updatePost(long postId, String title, String text, List<String> images);
 
-    void deletePost(Post post);
+    void deletePost(long postId);
 }

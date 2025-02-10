@@ -192,21 +192,19 @@ public class JdbcNativePostRepository implements PostRepository {
     }
 
     @Override
-    public long savePost(Post post) {
+    public long savePost(String title, String text, List<String> images) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         PreparedStatementCreator creator = connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     """
                             INSERT INTO blog.post (title, text, images, creation_time, update_time, deleted)
-                            VALUES (?, ?, ?, ?, ?, false)
+                            VALUES (?, ?, ?, now(), now(), false)
                             """,
                     Statement.RETURN_GENERATED_KEYS
             );
-            ps.setString(1, post.getTitle());
-            ps.setString(2, post.getText());
-            ps.setArray(3, toSqlArray(post.getImages(), jdbcTemplate));
-            ps.setObject(4, post.getCreationTime());
-            ps.setObject(5, post.getUpdateTime());
+            ps.setString(1, title);
+            ps.setString(2, text);
+            ps.setArray(3, toSqlArray(images, jdbcTemplate));
             return ps;
         };
         jdbcTemplate.update(creator, keyHolder);
@@ -215,34 +213,32 @@ public class JdbcNativePostRepository implements PostRepository {
     }
 
     @Override
-    public void updatePost(Post post) {
+    public void updatePost(long postId, String title, String text, List<String> images) {
         jdbcTemplate.update(
                 """
                         UPDATE blog.post
-                        SET title = ?, text = ?, images = ?, update_time = ?
+                        SET title = ?, text = ?, images = ?, update_time = now()
                         WHERE id = ?
                         """,
                 ps -> {
-                    ps.setString(1, post.getTitle());
-                    ps.setString(2, post.getText());
-                    ps.setArray(3, toSqlArray(post.getImages(), jdbcTemplate));
-                    ps.setObject(4, post.getUpdateTime());
-                    ps.setLong(5, post.getId());
+                    ps.setString(1, title);
+                    ps.setString(2, text);
+                    ps.setArray(3, toSqlArray(images, jdbcTemplate));
+                    ps.setLong(4, postId);
                 }
         );
     }
 
     @Override
-    public void deletePost(Post post) {
+    public void deletePost(long postId) {
         jdbcTemplate.update(
                 """
                         UPDATE blog.post
-                        SET update_time = ?, deleted = true
+                        SET update_time = now(), deleted = true
                         WHERE id = ?
                         """,
                 ps -> {
-                    ps.setObject(1, post.getUpdateTime());
-                    ps.setLong(2, post.getId());
+                    ps.setLong(1, postId);
                 }
         );
     }

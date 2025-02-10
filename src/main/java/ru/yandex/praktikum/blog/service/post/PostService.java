@@ -5,16 +5,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
-import ru.yandex.praktikum.blog.model.Post;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
 import ru.yandex.praktikum.blog.repo.like.LikeRepository;
 import ru.yandex.praktikum.blog.repo.post.PostRepository;
 import ru.yandex.praktikum.blog.repo.tag.TagRepository;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PostService {
@@ -51,28 +47,28 @@ public class PostService {
         return postRepository.findPostWithDetailsById(id);
     }
 
-    public long savePost(Post post, Set<String> tags) {
+    public long createPost(String title, String text, List<String> images, Set<String> tags) {
         var postId = transactionTemplate.execute(t -> {
-            var id = postRepository.savePost(post);
+            var id = postRepository.savePost(title, text, images);
             tagRepository.savePostTags(id, tags);
             return id;
         });
         return Objects.requireNonNull(postId);
     }
 
-    public void updatePost(Post post, Set<String> tags) {
+    public void updatePost(long postId, String title, String text, List<String> images, Set<String> tags) {
         transactionTemplate.executeWithoutResult(t -> {
-            updateTags(post.getId(), tags);
-            postRepository.updatePost(post);
+            updateTags(postId, tags);
+            postRepository.updatePost(postId, title, text, images);
         });
     }
 
-    public void deletePost(Post post) {
-        postRepository.deletePost(post);
+    public void deletePost(long postId) {
+        postRepository.deletePost(postId);
     }
 
-    public void likePost(Post post) {
-        likeRepository.savePostLike(post.getId());
+    public void likePost(long postId) {
+        likeRepository.savePostLike(postId);
     }
 
     private void updateTags(long postId, Set<String> tags) {
