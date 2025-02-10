@@ -12,8 +12,6 @@ public class Post {
     private OffsetDateTime updateTime;
     private boolean deleted;
 
-    public Post() {}
-
     public Post(
             long id,
             String title,
