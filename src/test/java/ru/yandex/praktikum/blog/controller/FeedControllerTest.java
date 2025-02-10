@@ -13,7 +13,6 @@ import org.springframework.web.context.WebApplicationContext;
 import ru.yandex.praktikum.blog.DatabaseTest;
 import ru.yandex.praktikum.blog.config.DatabaseConfig;
 import ru.yandex.praktikum.blog.config.ThymeleafConfiguration;
-import ru.yandex.praktikum.blog.config.WebConfig;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
 import ru.yandex.praktikum.blog.repo.like.JdbcNativeLikeRepository;
 import ru.yandex.praktikum.blog.repo.post.JdbcNativePostRepository;
@@ -33,9 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 JdbcNativeLikeRepository.class,
                 JdbcNativeTagRepository.class
         }),
-        @ContextConfiguration(name = "web", classes = {
-                WebConfig.class, ThymeleafConfiguration.class, FeedController.class
-        }),
+        @ContextConfiguration(name = "web", classes = {ThymeleafConfiguration.class, FeedController.class}),
 })
 class FeedControllerTest extends DatabaseTest {
 
