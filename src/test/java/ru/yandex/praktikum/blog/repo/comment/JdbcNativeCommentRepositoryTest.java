@@ -98,7 +98,7 @@ class JdbcNativeCommentRepositoryTest extends DatabaseTest {
 
     @Test
     void savePost() {
-        jdbcTemplate.execute("DELETE FROM blog.comment");
+        clear();
 
         var comment = new Comment(
                 0,

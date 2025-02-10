@@ -66,7 +66,7 @@ public class DatabaseTest {
     }
 
     @AfterEach
-    void clear() {
+    protected void clear() {
         jdbcTemplate.execute("DELETE FROM blog.comment");
         jdbcTemplate.execute("DELETE FROM blog.post_like");
         jdbcTemplate.execute("DELETE FROM blog.post_tag");

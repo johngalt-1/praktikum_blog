@@ -156,10 +156,7 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
 
     @Test
     void savePost() {
-        jdbcTemplate.execute("DELETE FROM blog.comment");
-        jdbcTemplate.execute("DELETE FROM blog.post_like");
-        jdbcTemplate.execute("DELETE FROM blog.post_tag");
-        jdbcTemplate.execute("DELETE FROM blog.post");
+        clear();
 
         var post = new Post(
                 0,
