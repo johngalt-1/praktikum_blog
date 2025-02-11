@@ -1,7 +1,9 @@
 package ru.yandex.praktikum.blog.controller;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -40,5 +42,10 @@ public class ControllerTest {
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+
+    @AfterEach
+    protected void clear() {
+        Mockito.reset(fileManager);
     }
 }
