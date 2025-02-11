@@ -10,15 +10,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
 import ru.yandex.praktikum.blog.service.post.PostService;
+import ru.yandex.praktikum.blog.utils.FileManager;
+
+import java.nio.file.Path;
 
 @Controller
 @RequestMapping("/")
 public class FeedController {
 
     private final PostService postService;
+    private final FileManager fileManager;
 
-    public FeedController(PostService postService) {
+    public FeedController(PostService postService, FileManager fileManager) {
         this.postService = postService;
+        this.fileManager = fileManager;
     }
 
     @GetMapping
@@ -35,6 +40,15 @@ public class FeedController {
         } else {
             posts = postService.findPostsWithDetails(pageable);
         }
+        posts.getContent().forEach(postWithDetail -> {
+            var post = postWithDetail.getPost();
+            var images = post.getImages();
+            var paths = images.stream()
+                    .map(fileManager::getFilePath)
+                    .map(Path::toString)
+                    .toList();
+            post.setImages(paths);
+        });
         model.addAttribute("posts", posts);
         return "feed";
     }

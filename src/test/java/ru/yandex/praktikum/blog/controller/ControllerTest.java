@@ -14,6 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 import ru.yandex.praktikum.blog.config.ThymeleafConfiguration;
 import ru.yandex.praktikum.blog.service.comment.CommentService;
 import ru.yandex.praktikum.blog.service.post.PostService;
+import ru.yandex.praktikum.blog.utils.FileManager;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
@@ -30,6 +31,9 @@ public class ControllerTest {
 
     @Autowired
     protected CommentService commentService;
+
+    @Autowired
+    protected FileManager fileManager;
 
     protected MockMvc mockMvc;
 

@@ -1,15 +1,22 @@
 package ru.yandex.praktikum.blog.controller;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import ru.yandex.praktikum.blog.config.ThymeleafConfiguration;
+import ru.yandex.praktikum.blog.model.Post;
+import ru.yandex.praktikum.blog.model.PostWithDetails;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -23,16 +30,22 @@ class PostControllerTest extends ControllerTest {
 
     @Test
     void getPost() throws Exception {
-        when(postService.findPostWithDetailsById(anyLong())).thenReturn(mock());
+        Post post = mock();
+        when(post.getImages()).thenReturn(List.of("image1.jpg", "image2.png"));
+        PostWithDetails postWithDetails = mock();
+        when(postWithDetails.getPost()).thenReturn(post);
+        when(postService.findPostWithDetailsById(anyLong())).thenReturn(Optional.of(postWithDetails));
         when(commentService.findCommentsByPostId(anyLong())).thenReturn(mock());
         mockMvc.perform(get("/post/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
                 .andExpect(view().name("post"))
                 .andExpect(model().attributeExists("post"))
-                .andExpect(model().attributeExists("comments"));
+                .andExpect(model().attributeExists("comments"))
+                .andExpect(model().attributeExists("images"));
         verify(postService).findPostWithDetailsById(1L);
         verify(commentService).findCommentsByPostId(1L);
+        verify(fileManager, times(2)).getFilePath(anyString());
     }
 
     @Test
@@ -40,27 +53,32 @@ class PostControllerTest extends ControllerTest {
         var title = "Заголовок";
         var text = "Текст";
 
-        var imagesList = List.of("image100.png", "image200.jpg");
-        MultiValueMap<String, String> images = new LinkedMultiValueMap<>();
-        images.addAll("images", imagesList);
-
         var tag1 = "new_tag";
         var tag2 = "one_more_new_tag";
         var tagList = List.of(tag1, tag2);
         MultiValueMap<String, String> tags = new LinkedMultiValueMap<>();
         tags.addAll("tags", tagList);
 
+        when(fileManager.saveFile(any())).thenReturn("image_11212121.png").thenReturn("image_11212122.jpg");
+
         mockMvc.perform(
-                        post("/post")
+                        multipart("/post")
+                                .file(new MockMultipartFile("images", null, null, (byte[]) null))
+                                .file(new MockMultipartFile("images", null, null, (byte[]) null))
                                 .param("title", title)
                                 .param("text", text)
-                                .params(images)
                                 .params(tags)
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
 
-        verify(postService).createPost(title, text, imagesList, new HashSet<>(tagList));
+
+        ArgumentCaptor<List<String>> captor = ArgumentCaptor.captor();
+        verify(postService).createPost(eq(title), eq(text), captor.capture(), eq(new HashSet<>(tagList)));
+        var images = captor.getValue();
+        assertEquals(2, images.size());
+        assertTrue(images.getFirst().endsWith(".png"));
+        assertTrue(images.getLast().endsWith(".jpg"));
     }
 
     @Test
@@ -68,27 +86,31 @@ class PostControllerTest extends ControllerTest {
         var title = "Заголовок";
         var text = "Текст";
 
-        var imagesList = List.of("image100.png", "image200.jpg");
-        MultiValueMap<String, String> images = new LinkedMultiValueMap<>();
-        images.addAll("images", imagesList);
-
         var tag1 = "new_tag";
         var tag2 = "one_more_new_tag";
         var tagList = List.of(tag1, tag2);
         MultiValueMap<String, String> tags = new LinkedMultiValueMap<>();
         tags.addAll("tags", tagList);
 
+        when(fileManager.saveFile(any())).thenReturn("image_11212121.png").thenReturn("image_11212122.jpg");
+
         mockMvc.perform(
-                        post("/post/1")
+                        multipart("/post/1")
+                                .file(new MockMultipartFile("images", null, null, (byte[]) null))
+                                .file(new MockMultipartFile("images", null, null, (byte[]) null))
                                 .param("title", title)
                                 .param("text", text)
-                                .params(images)
                                 .params(tags)
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/post/1"));
 
-        verify(postService).updatePost(1, title, text, imagesList, new HashSet<>(tagList));
+        ArgumentCaptor<List<String>> captor = ArgumentCaptor.captor();
+        verify(postService).updatePost(eq(1L), eq(title), eq(text), captor.capture(), eq(new HashSet<>(tagList)));
+        var images = captor.getValue();
+        assertEquals(2, images.size());
+        assertTrue(images.getFirst().endsWith(".png"));
+        assertTrue(images.getLast().endsWith(".jpg"));
     }
 
     @Test

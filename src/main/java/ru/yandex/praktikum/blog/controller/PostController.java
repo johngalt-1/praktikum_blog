@@ -3,8 +3,10 @@ package ru.yandex.praktikum.blog.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.praktikum.blog.service.comment.CommentService;
 import ru.yandex.praktikum.blog.service.post.PostService;
+import ru.yandex.praktikum.blog.utils.FileManager;
 
 import java.util.List;
 import java.util.Set;
@@ -14,18 +16,28 @@ import java.util.Set;
 public class PostController {
     private final PostService postService;
     private final CommentService commentService;
+    private final FileManager fileManager;
 
-    public PostController(PostService postService, CommentService commentService) {
+    public PostController(
+            PostService postService,
+            CommentService commentService,
+            FileManager fileManager
+    ) {
         this.postService = postService;
         this.commentService = commentService;
+        this.fileManager = fileManager;
     }
 
     @GetMapping("/{id}")
     public String getPost(@PathVariable(value = "id") long postId, Model model) {
-        var post = postService.findPostWithDetailsById(postId);
+        var post = postService.findPostWithDetailsById(postId).orElseThrow(
+                () -> new IllegalArgumentException("No post with such id")
+        );
         var comments = commentService.findCommentsByPostId(postId);
+        var images = post.getPost().getImages().stream().map(fileManager::getFilePath).toList();
         model.addAttribute("post", post);
         model.addAttribute("comments", comments);
+        model.addAttribute("images", images);
         return "post";
     }
 
@@ -33,10 +45,11 @@ public class PostController {
     public String createPost(
             @RequestParam(value = "title") String title,
             @RequestParam(value = "text") String text,
-            @RequestParam(value = "images") List<String> images,
+            @RequestParam("images") List<MultipartFile> images,
             @RequestParam(value = "tags") Set<String> tags
     ) {
-        postService.createPost(title, text, images, tags);
+        var imageNames = images.stream().map(fileManager::saveFile).toList();
+        postService.createPost(title, text, imageNames, tags);
         return "redirect:/";
     }
 
@@ -45,10 +58,11 @@ public class PostController {
             @PathVariable(value = "id") long postId,
             @RequestParam(value = "title") String title,
             @RequestParam(value = "text") String text,
-            @RequestParam(value = "images") List<String> images,
+            @RequestParam("images") List<MultipartFile> images,
             @RequestParam(value = "tags") Set<String> tags
     ) {
-        postService.updatePost(postId, title, text, images, tags);
+        var imageNames = images.stream().map(fileManager::saveFile).toList();
+        postService.updatePost(postId, title, text, imageNames, tags);
         return "redirect:/post/" + postId;
     }
 
