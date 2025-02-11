@@ -45,8 +45,8 @@ public class PostController {
     public String createPost(
             @RequestParam(value = "title") String title,
             @RequestParam(value = "text") String text,
-            @RequestParam("images") List<MultipartFile> images,
-            @RequestParam(value = "tags") Set<String> tags
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
+            @RequestParam(value = "tags", required = false) Set<String> tags
     ) {
         var imageNames = images.stream().map(fileManager::saveFile).toList();
         postService.createPost(title, text, imageNames, tags);
@@ -58,8 +58,8 @@ public class PostController {
             @PathVariable(value = "id") long postId,
             @RequestParam(value = "title") String title,
             @RequestParam(value = "text") String text,
-            @RequestParam("images") List<MultipartFile> images,
-            @RequestParam(value = "tags") Set<String> tags
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
+            @RequestParam(value = "tags", required = false) Set<String> tags
     ) {
         var imageNames = images.stream().map(fileManager::saveFile).toList();
         postService.updatePost(postId, title, text, imageNames, tags);
