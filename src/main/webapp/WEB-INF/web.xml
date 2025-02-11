@@ -9,7 +9,10 @@
     <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-
+        <multipart-config>
+            <max-file-size>10000000</max-file-size>
+            <max-request-size>10000000</max-request-size>
+        </multipart-config>
         <init-param>
             <param-name>contextClass</param-name>
             <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
