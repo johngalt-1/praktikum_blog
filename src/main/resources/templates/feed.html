@@ -129,16 +129,28 @@
 </div>
 
 <div th:if="${searchTag != null}">
+    <a th:if="${posts.hasPrevious}"
+       th:href="@{/(tag=${searchTag},pageSize=${posts.size},pageNumber=${posts.number - 1})}"
+    >Предыдущая<br></a>
     Постов на странице:
     <a th:href="@{/(tag=${searchTag},pageSize=10,pageNumber=${posts.number})}">10</a>
     <a th:href="@{/(tag=${searchTag},pageSize=20,pageNumber=${posts.number})}">20</a>
     <a th:href="@{/(tag=${searchTag},pageSize=50,pageNumber=${posts.number})}">50</a>
+    <a th:if="${posts.hasNext}"
+       th:href="@{/(tag=${searchTag},pageSize=${posts.size},pageNumber=${posts.number + 1})}"
+    ><br>Следующая</a>
 </div>
 <div th:if="${searchTag == null}">
+    <a th:if="${posts.hasPrevious}"
+       th:href="@{/(pageSize=${posts.size},pageNumber=${posts.number - 1})}"
+    >Предыдущая<br></a>
     Постов на странице:
     <a th:href="@{/(pageSize=10,pageNumber=${posts.number})}">10</a>
     <a th:href="@{/(pageSize=20,pageNumber=${posts.number})}">20</a>
     <a th:href="@{/(pageSize=50,pageNumber=${posts.number})}">50</a>
+    <a th:if="${posts.hasNext}"
+       th:href="@{/(pageSize=${posts.size},pageNumber=${posts.number + 1})}"
+    ><br>Следующая</a>
 </div>
 
 </body>
