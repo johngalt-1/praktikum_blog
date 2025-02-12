@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Уютный бложик для любимых падпищеков</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .post {
+            border: 2px solid green;
+            margin-bottom: 50px;
+        }
+        .post-text {
+            height: 3em;
+            overflow: hidden
+        }
+        .actions {
+            text-align: center;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="number"], input[type="checkbox"] {
+            width: 10%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .btn-add {
+            margin-bottom: 20px;
+        }
+        pre {
+           font-size: 15px;
+           padding: 10px;
+        }
+        .tags {
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<script>
+    function showPostForm() {
+        const form = document.getElementById('postForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function addTagInput() {
+        let tags = document.getElementById('tags');
+        let number = tags.getAttribute('data-number');
+        let tag = document.getElementById('tag' + number);
+        let newTag = tag.cloneNode(true);
+        tags.setAttribute('data-number', ++number);
+        newTag.setAttribute('id', 'tag' + number);
+        newTag.value = "";
+        tag.after(newTag);
+    }
+</script>
+<body>
+
+<h1>Новые посты</h1>
+<form th:action="@{/}" method="GET">
+    <div>
+        <label for="title">Поиск по тегу</label>
+        <input type="text" id="tagForSearch" name="tag" required="required"/>
+    </div>
+    <button type="submit">Искать</button>
+</form>
+
+<button class="btn-add" onclick="showPostForm()">Новый пост</button>
+
+<div class="form-container" style="display: none;" id="postForm">
+    <h2>Новый пост</h2>
+    <form th:action="@{/post}" method="POST" enctype="multipart/form-data">
+        <div>
+            <label for="title">Заголовок</label>
+            <input type="text" id="title" name="title" required="required"/>
+        </div>
+
+        <div>
+            <label for="text">Текст поста</label>
+            <textarea id="text" name="text" cols="50" rows="10"></textarea>
+        </div>
+
+        <div id="images">
+            <input type="file" name="images" multiple/>
+        </div>
+
+        <div id="tags" data-number="0">
+            <input type="text" name="tags" id="tag0"/>
+            <button type="button" class="btn-add" onclick="addTagInput()">Ещё один тег</button>
+        </div>
+
+        <button type="submit">Добавить</button>
+    </form>
+</div>
+
+<div>
+    <div th:each="post : ${posts}">
+        <div class="post">
+            <h2 th:text="${post.post.title}"></h2>
+            <pre class="post-text" th:text="${post.post.text}"></pre>
+            <div th:each="image : ${post.post.images}">
+                <img th:src="${image}" alt="Тут должна быть картинка" height="300px"/>
+            </div>
+            <div th:text="'Комментариев: ' + ${post.commentsCount}"></div>
+            <div th:text="'Лайков: ' + ${post.likesCount}"></div>
+            <div class="tags" th:each="tag : ${post.tags}">
+                <a style="float: left; margin-right: 10px" th:text="'#' + ${tag}" th:href="@{/(tag=${tag})}"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
