@@ -12,8 +12,6 @@ import ru.yandex.praktikum.blog.model.PostWithDetails;
 import ru.yandex.praktikum.blog.service.post.PostService;
 import ru.yandex.praktikum.blog.utils.FileManager;
 
-import java.nio.file.Path;
-
 @Controller
 @RequestMapping("/")
 public class FeedController {
@@ -44,8 +42,7 @@ public class FeedController {
             var post = postWithDetail.getPost();
             var images = post.getImages();
             var paths = images.stream()
-                    .map(fileManager::getFilePath)
-                    .map(Path::toString)
+                    .map(fileManager::getFileUrl)
                     .toList();
             post.setImages(paths);
         });

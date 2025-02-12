@@ -10,7 +10,6 @@ import ru.yandex.praktikum.blog.config.ThymeleafConfiguration;
 import ru.yandex.praktikum.blog.model.Post;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
 
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,12 +40,12 @@ class FeedControllerTest extends ControllerTest {
         when(postService.findPostsWithDetails(any())).thenReturn(
                 new PageImpl<>(List.of(postWithDetails1, postWithDetails2))
         );
-        when(fileManager.getFilePath(anyString())).thenReturn(Path.of("/foo/bar/"));
+        doCallRealMethod().when(fileManager).getFileUrl(any());
 
         testUrl("/?pageSize=3&pageNumber=0");
 
         verify(postService).findPostsWithDetails(any());
-        verify(fileManager, times(4)).getFilePath(anyString());
+        verify(fileManager, times(4)).getFileUrl(anyString());
         assertEquals(images1, post1.getImages());
         assertEquals(images2, post2.getImages());
     }
@@ -55,7 +54,7 @@ class FeedControllerTest extends ControllerTest {
     @ValueSource(strings = {"тег1", "тег2"})
     void searchByTag(String tag) throws Exception {
         when(postService.findPostsWithDetailsByTag(eq(tag), any())).thenReturn(new PageImpl<>(Collections.emptyList()));
-        when(fileManager.getFilePath(anyString())).thenReturn(Path.of("/foo/bar/"));
+        doCallRealMethod().when(fileManager).getFileUrl(any());
 
         testUrl("/?pageSize=2&pageNumber=0&tag=" + tag);
 

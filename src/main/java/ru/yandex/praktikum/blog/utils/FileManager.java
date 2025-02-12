@@ -2,8 +2,10 @@ package ru.yandex.praktikum.blog.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,9 +15,15 @@ import java.util.Objects;
 @Component
 public class FileManager {
     private final Path imagesPath;
+    private final String imagesUrl;
 
-    public FileManager(@Value("${images.dir}") String imagesDir) {
+    public FileManager(
+            @Value("${images.dir}") String imagesDir,
+            @Value("${images.url}") String imagesUrl
+    ) {
         this.imagesPath = Path.of(imagesDir);
+        this.imagesUrl = imagesUrl;
+        createImagesDirectory();
     }
 
     public String saveFile(MultipartFile file) {
@@ -31,6 +39,10 @@ public class FileManager {
 
     public Path getFilePath(String fileName) {
         return imagesPath.resolve(fileName).toAbsolutePath();
+    }
+
+    public String getFileUrl(String fileName) {
+        return imagesUrl + fileName;
     }
 
     public boolean validateFile(MultipartFile file) {
@@ -52,5 +64,21 @@ public class FileManager {
     private String getFileExtension(MultipartFile file) {
         var originalFileName = file.getOriginalFilename();
         return Objects.requireNonNull(originalFileName).substring(originalFileName.lastIndexOf(".") + 1);
+    }
+
+    protected void createImagesDirectory() {
+        File imagesDirectory = new File(imagesPath.toString());
+        if (!imagesDirectory.exists()) {
+            try {
+                Files.createDirectory(imagesPath);
+            } catch (IOException e) {
+                throw new RuntimeException("Error while creating directory for images");
+            }
+        }
+    }
+
+    protected void clearImagesDirectory() {
+        File imagesDirectory = new File(imagesPath.toString());
+        FileSystemUtils.deleteRecursively(imagesDirectory);
     }
 }

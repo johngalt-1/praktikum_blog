@@ -1,5 +1,7 @@
 package ru.yandex.praktikum.blog.utils;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +25,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class FileManagerTest {
     @Autowired
     FileManager fileManager;
+
+    @BeforeEach
+    void init() {
+        fileManager.createImagesDirectory();
+    }
+
+    @AfterEach
+    void clear() {
+        fileManager.clearImagesDirectory();
+    }
 
     @ParameterizedTest
     @CsvSource({

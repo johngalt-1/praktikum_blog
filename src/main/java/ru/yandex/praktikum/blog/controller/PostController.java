@@ -34,7 +34,7 @@ public class PostController {
                 () -> new IllegalArgumentException("No post with such id")
         );
         var comments = commentService.findCommentsByPostId(postId);
-        var images = post.getPost().getImages().stream().map(fileManager::getFilePath).toList();
+        var images = post.getPost().getImages().stream().map(fileManager::getFileUrl).toList();
         model.addAttribute("post", post);
         model.addAttribute("comments", comments);
         model.addAttribute("images", images);

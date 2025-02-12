@@ -46,7 +46,7 @@ class PostControllerTest extends ControllerTest {
                 .andExpect(model().attributeExists("images"));
         verify(postService).findPostWithDetailsById(1L);
         verify(commentService).findCommentsByPostId(1L);
-        verify(fileManager, times(2)).getFilePath(anyString());
+        verify(fileManager, times(2)).getFileUrl(anyString());
     }
 
     @Test
