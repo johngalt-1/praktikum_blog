@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Objects;
 
 @Component
 public class FileManager {
@@ -32,6 +33,16 @@ public class FileManager {
         return imagesPath.resolve(fileName).toAbsolutePath();
     }
 
+    public boolean validateFile(MultipartFile file) {
+        try {
+            return file.getBytes().length > 0 &&
+                   file.getOriginalFilename() != null &&
+                   !file.getOriginalFilename().isBlank();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private String getFileName(MultipartFile file) {
         var timestamp = Instant.now().toEpochMilli();
         var extension = getFileExtension(file);
@@ -40,9 +51,6 @@ public class FileManager {
 
     private String getFileExtension(MultipartFile file) {
         var originalFileName = file.getOriginalFilename();
-        if (originalFileName == null) {
-            throw new IllegalStateException("Could not get file name");
-        }
-        return originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
+        return Objects.requireNonNull(originalFileName).substring(originalFileName.lastIndexOf(".") + 1);
     }
 }

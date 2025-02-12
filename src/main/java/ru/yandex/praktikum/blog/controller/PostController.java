@@ -48,7 +48,10 @@ public class PostController {
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
             @RequestParam(value = "tags", required = false) Set<String> tags
     ) {
-        var imageNames = images.stream().map(fileManager::saveFile).toList();
+        var imageNames = images.stream()
+                .filter(fileManager::validateFile)
+                .map(fileManager::saveFile)
+                .toList();
         postService.createPost(title, text, imageNames, tags);
         return "redirect:/";
     }
@@ -61,7 +64,10 @@ public class PostController {
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
             @RequestParam(value = "tags", required = false) Set<String> tags
     ) {
-        var imageNames = images.stream().map(fileManager::saveFile).toList();
+        var imageNames = images.stream()
+                .filter(fileManager::validateFile)
+                .map(fileManager::saveFile)
+                .toList();
         postService.updatePost(postId, title, text, imageNames, tags);
         return "redirect:/post/" + postId;
     }

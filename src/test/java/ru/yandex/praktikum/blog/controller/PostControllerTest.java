@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -60,11 +61,12 @@ class PostControllerTest extends ControllerTest {
         tags.addAll("tags", tagList);
 
         when(fileManager.saveFile(any())).thenReturn("image_11212121.png").thenReturn("image_11212122.jpg");
+        doCallRealMethod().when(fileManager).validateFile(any());
 
         mockMvc.perform(
                         multipart("/post")
-                                .file(new MockMultipartFile("images", null, null, (byte[]) null))
-                                .file(new MockMultipartFile("images", null, null, (byte[]) null))
+                                .file(new MockMultipartFile("images", "a.png", null, "a".getBytes()))
+                                .file(new MockMultipartFile("images", "a.jpg", null, "a".getBytes()))
                                 .param("title", title)
                                 .param("text", text)
                                 .params(tags)
@@ -72,13 +74,28 @@ class PostControllerTest extends ControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
 
-
         ArgumentCaptor<List<String>> captor = ArgumentCaptor.captor();
         verify(postService).createPost(eq(title), eq(text), captor.capture(), eq(new HashSet<>(tagList)));
         var images = captor.getValue();
         assertEquals(2, images.size());
         assertTrue(images.getFirst().endsWith(".png"));
         assertTrue(images.getLast().endsWith(".jpg"));
+    }
+
+    @Test
+    void createPostWithNoImagesAndTags() throws Exception {
+        doCallRealMethod().when(fileManager).validateFile(any());
+
+        mockMvc.perform(
+                        multipart("/post")
+                                .file(new MockMultipartFile("images", null, null, "".getBytes()))
+                                .param("title", "Заголовок")
+                                .param("text", "Текст")
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+
+        verify(postService).createPost(any(), any(), eq(emptyList()), any());
     }
 
     @Test
@@ -93,11 +110,12 @@ class PostControllerTest extends ControllerTest {
         tags.addAll("tags", tagList);
 
         when(fileManager.saveFile(any())).thenReturn("image_11212121.png").thenReturn("image_11212122.jpg");
+        doCallRealMethod().when(fileManager).validateFile(any());
 
         mockMvc.perform(
                         multipart("/post/1")
-                                .file(new MockMultipartFile("images", null, null, (byte[]) null))
-                                .file(new MockMultipartFile("images", null, null, (byte[]) null))
+                                .file(new MockMultipartFile("images", "a.png", null, "a".getBytes()))
+                                .file(new MockMultipartFile("images", "a.jpg", null, "a".getBytes()))
                                 .param("title", title)
                                 .param("text", text)
                                 .params(tags)
