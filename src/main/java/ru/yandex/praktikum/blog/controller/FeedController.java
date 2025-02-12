@@ -35,6 +35,7 @@ public class FeedController {
         Page<PostWithDetails> posts;
         if (tag != null) {
             posts = postService.findPostsWithDetailsByTag(tag, pageable);
+            model.addAttribute("searchTag", tag);
         } else {
             posts = postService.findPostsWithDetails(pageable);
         }

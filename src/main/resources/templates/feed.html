@@ -128,5 +128,18 @@
     </div>
 </div>
 
+<div th:if="${searchTag != null}">
+    Постов на странице:
+    <a th:href="@{/(tag=${searchTag},pageSize=10,pageNumber=${posts.number})}">10</a>
+    <a th:href="@{/(tag=${searchTag},pageSize=20,pageNumber=${posts.number})}">20</a>
+    <a th:href="@{/(tag=${searchTag},pageSize=50,pageNumber=${posts.number})}">50</a>
+</div>
+<div th:if="${searchTag == null}">
+    Постов на странице:
+    <a th:href="@{/(pageSize=10,pageNumber=${posts.number})}">10</a>
+    <a th:href="@{/(pageSize=20,pageNumber=${posts.number})}">20</a>
+    <a th:href="@{/(pageSize=50,pageNumber=${posts.number})}">50</a>
+</div>
+
 </body>
 </html>
