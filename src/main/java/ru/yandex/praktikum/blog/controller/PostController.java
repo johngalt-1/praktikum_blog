@@ -8,6 +8,7 @@ import ru.yandex.praktikum.blog.service.comment.CommentService;
 import ru.yandex.praktikum.blog.service.post.PostService;
 import ru.yandex.praktikum.blog.utils.FileManager;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,6 +89,9 @@ public class PostController {
     }
 
     private Set<String> filterTags(Set<String> tags) {
+        if (tags == null) {
+            return Collections.emptySet();
+        }
         return tags.stream().filter(this::validateTag).collect(Collectors.toSet());
     }
 
