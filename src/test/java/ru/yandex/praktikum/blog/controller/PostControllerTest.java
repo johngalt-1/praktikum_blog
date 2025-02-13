@@ -36,7 +36,7 @@ class PostControllerTest extends ControllerTest {
         PostWithDetails postWithDetails = mock();
         when(postWithDetails.getPost()).thenReturn(post);
         when(postService.findPostWithDetailsById(anyLong())).thenReturn(Optional.of(postWithDetails));
-        when(commentService.findCommentsByPostId(anyLong())).thenReturn(mock());
+        when(commentService.findCommentsByPostId(anyLong())).thenReturn(emptyList());
         mockMvc.perform(get("/post/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
