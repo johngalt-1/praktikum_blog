@@ -90,6 +90,13 @@
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
     }
 
+    function showEditCommentForm() {
+        let text = document.getElementById('commentCurrentText');
+        let form = document.getElementById('editCommentForm');
+        text.style.display = text.style.display === 'none' ? 'block' : 'none';
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
     function addTagInput() {
         let tags = document.getElementById('tags');
         let number = tags.getAttribute('data-number');
@@ -165,8 +172,17 @@
 
     <div th:each="comment : ${comments}" class="comment" th:attr="id='comment' + ${comment.id}">
         <button class="btn-add" th:attr="onclick=|deleteComment(${comment.id})|">Удалить комментарий</button>
-        <button class="btn-add" th:attr="onclick=|editComment(${comment.id}, ${post.post.id})|">Удалить комментарий</button>
-        <pre class="comment-text" th:text="${comment.text}"></pre>
+        <button class="btn-add" th:attr="onclick=|showEditCommentForm()|">Редактировать комментарий</button>
+        <pre class="comment-text" id="commentCurrentText" th:text="${comment.text}"></pre>
+
+        <div class="form-container" style="display: none;" id="editCommentForm">
+            <form th:action="@{/comment/{commentId}(commentId=${comment.id})}" method="POST">
+                <div>
+                    <textarea name="text" cols="50" rows="10" th:text="${comment.text}"></textarea>
+                    <input hidden="hidden" name="postId" th:value="${post.post.id}">
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
