@@ -1,5 +1,7 @@
 package ru.yandex.praktikum.blog.utils;
 
+import jakarta.servlet.ServletContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileSystemUtils;
@@ -16,6 +18,9 @@ import java.util.Objects;
 public class FileManager {
     private final Path imagesPath;
     private final String imagesUrl;
+
+    @Autowired
+    private ServletContext context;
 
     public FileManager(
             @Value("${images.dir}") String imagesDir,
@@ -42,7 +47,7 @@ public class FileManager {
     }
 
     public String getFileUrl(String fileName) {
-        return imagesUrl + fileName;
+        return context.getContextPath() + imagesUrl + fileName;
     }
 
     public boolean validateFile(MultipartFile file) {

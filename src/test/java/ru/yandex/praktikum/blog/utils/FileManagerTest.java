@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestPropertySource(locations = "classpath:properties/application.properties")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = FileManager.class)
+@ContextConfiguration(classes = {FileManager.class, FileManagerTestConfig.class})
 class FileManagerTest {
     @Autowired
     FileManager fileManager;
