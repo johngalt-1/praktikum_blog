@@ -64,17 +64,13 @@
         }
     });
 
-    function deletePost(postId) {
-        let root = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
-        let url = root + '/post/' + postId;
+    function deletePost(url) {
         fetch(url, {
             method: "DELETE"
         }).then((response) => window.location.replace(response.url));
     }
 
-    function deleteComment(commentId) {
-        let root = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
-        let url = root + '/comment/' + commentId;
+    function deleteComment(url, commentId) {
         fetch(url, {
             method: "DELETE"
         });
@@ -140,7 +136,7 @@
         </form>
     </div>
 
-    <button class="btn-add" th:attr="onclick=|deletePost(${post.post.id})|">Удалить пост</button>
+    <button class="btn-add" th:with= "url = @{/post/{postId}(postId=${post.post.id})}" th:attr="onclick=|deletePost('${url}')|">Удалить пост</button>
 
     <h2 th:text="${post.post.title}"></h2>
     <div th:text="'Лайков: ' + ${post.likesCount}"></div>
@@ -174,7 +170,7 @@
     </div>
 
     <div th:each="comment : ${comments}" class="comment" th:attr="id='comment' + ${comment.id}">
-        <button class="btn-add" th:attr="onclick=|deleteComment(${comment.id})|">Удалить комментарий</button>
+        <button class="btn-add" th:with="url=@{/comment/{commentId}(commentId=${comment.id})}" th:attr="onclick=|deleteComment('${url}', ${comment.id})|">Удалить комментарий</button>
         <button class="btn-add" th:attr="onclick=|showEditCommentForm()|">Редактировать комментарий</button>
         <pre class="comment-text" id="commentCurrentText" th:text="${comment.text}"></pre>
 
