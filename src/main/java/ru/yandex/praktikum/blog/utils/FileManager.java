@@ -61,7 +61,7 @@ public class FileManager {
     }
 
     private String getFileName(MultipartFile file) {
-        var timestamp = Instant.now().toEpochMilli();
+        var timestamp = Instant.now().toEpochMilli() * 1_000_000 + Instant.now().getNano();
         var extension = getFileExtension(file);
         return "image_" + timestamp + "." + extension;
     }
