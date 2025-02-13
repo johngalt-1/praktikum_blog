@@ -56,8 +56,7 @@ class CommentControllerTest extends ControllerTest {
                         delete("/comment/222")
                                 .param("postId", "4")
                 )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/post/4"));
+                .andExpect(status().isOk());
         verify(commentService).deleteComment(222);
     }
 }

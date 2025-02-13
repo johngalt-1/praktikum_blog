@@ -1,5 +1,6 @@
 package ru.yandex.praktikum.blog.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.praktikum.blog.service.comment.CommentService;
@@ -33,11 +34,11 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public String deleteComment(
+    public ResponseEntity<?> deleteComment(
             @PathVariable(value = "commentId") long commentId,
             @RequestParam(value = "postId") long postId
     ) {
         commentService.deleteComment(commentId);
-        return "redirect:/post/" + postId;
+        return ResponseEntity.ok().build();
     }
 }
