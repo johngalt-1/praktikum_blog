@@ -52,11 +52,7 @@ class CommentControllerTest extends ControllerTest {
 
     @Test
     void deleteComment() throws Exception {
-        mockMvc.perform(
-                        delete("/comment/222")
-                                .param("postId", "4")
-                )
-                .andExpect(status().isOk());
+        mockMvc.perform(delete("/comment/222")).andExpect(status().isOk());
         verify(commentService).deleteComment(222);
     }
 }
