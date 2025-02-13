@@ -59,7 +59,10 @@ public class PostService {
     public void updatePost(long postId, String title, String text, List<String> images, Set<String> tags) {
         transactionTemplate.executeWithoutResult(t -> {
             updateTags(postId, tags);
-            postRepository.updatePost(postId, title, text, images);
+            List<String> oldImages = findPostWithDetailsById(postId).orElseThrow().getPost().getImages();
+            ArrayList<String> allImages = new ArrayList<>(oldImages);
+            allImages.addAll(images);
+            postRepository.updatePost(postId, title, text, allImages);
         });
     }
 

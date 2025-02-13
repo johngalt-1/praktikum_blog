@@ -114,7 +114,7 @@ class PostServiceTest extends DatabaseTest {
         assertTrue(postWithDetails.isPresent());
         post = postWithDetails.get().getPost();
         assertEquals(Set.of("тег2", "тег3"), postWithDetails.get().getTags());
-        assertEquals(List.of("image1.jpg", "image3.png"), post.getImages());
+        assertEquals(List.of("image1.jpg", "image2.jpg", "image1.jpg", "image3.png"), post.getImages());
     }
 
     private static Stream<Arguments> pageArguments() {
