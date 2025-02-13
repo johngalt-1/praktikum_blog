@@ -22,6 +22,10 @@
             height: 3em;
             overflow: hidden
         }
+        .comment {
+            border: 2px solid green;
+            margin-bottom: 50px;
+        }
         .actions {
             text-align: center;
         }
@@ -60,17 +64,29 @@
 <script>
     function deletePost(postId) {
         let root = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
-        console.log(root);
         let url = root + '/post/' + postId;
-        console.log(url);
-
         fetch(url, {
             method: "DELETE"
-        }).then((response) =>  window.location.replace(response.url));
+        }).then((response) => window.location.replace(response.url));
+    }
+
+    function deleteComment(commentId) {
+        let root = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
+        let url = root + '/comment/' + commentId;
+        fetch(url, {
+            method: "DELETE"
+        });
+        let comment = document.getElementById('comment' + commentId);
+        comment.remove();
     }
 
     function showPostForm() {
         const form = document.getElementById('postForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function showCommentForm() {
+        const form = document.getElementById('commentForm');
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
     }
 
@@ -130,9 +146,29 @@
         <a style="float: left; margin-right: 10px" th:text="'#' + ${tag}" th:href="@{/(tag=${tag})}"></a>
     </div>
     <br>
-    <div th:text="'Комментариев: ' + ${post.commentsCount}"></div>
 </div>
 
+<div>
+    <div th:text="'Комментариев: ' + ${post.commentsCount}"></div>
+
+    <button class="btn-add" onclick="showCommentForm()">Добавить комментарий</button>
+    <div class="form-container" style="display: none;" id="commentForm">
+        <form th:action="@{/comment}" method="POST">
+            <div>
+                <label for="comment-text">Текст комментария</label>
+                <textarea id="comment-text" name="text" cols="50" rows="10"></textarea>
+                <input hidden="true" name="postId" th:value="${post.post.id}"></input>
+            </div>
+            <button type="submit">Сохранить</button>
+        </form>
+    </div>
+
+    <div th:each="comment : ${comments}" class="comment" th:attr="id='comment' + ${comment.id}">
+        <button class="btn-add" th:attr="onclick=|deleteComment(${comment.id})|">Удалить комментарий</button>
+        <button class="btn-add" th:attr="onclick=|editComment(${comment.id}, ${post.post.id})|">Удалить комментарий</button>
+        <pre class="comment-text" th:text="${comment.text}"></pre>
+    </div>
+</div>
 
 </body>
 </html>
