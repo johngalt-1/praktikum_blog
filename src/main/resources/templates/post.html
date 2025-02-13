@@ -170,7 +170,7 @@
             <div>
                 <label for="comment-text">Текст комментария</label>
                 <textarea id="comment-text" name="text" cols="50" rows="10"></textarea>
-                <input hidden="true" name="postId" th:value="${post.post.id}"></input>
+                <input hidden="hidden" name="postId" th:value="${post.post.id}">
             </div>
             <button type="submit">Сохранить</button>
         </form>
