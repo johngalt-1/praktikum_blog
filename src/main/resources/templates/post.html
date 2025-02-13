@@ -68,17 +68,60 @@
             method: "DELETE"
         }).then((response) =>  window.location.replace(response.url));
     }
+
+    function showPostForm() {
+        const form = document.getElementById('postForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function addTagInput() {
+        let tags = document.getElementById('tags');
+        let number = tags.getAttribute('data-number');
+        let tag = document.getElementById('tag' + number);
+        let newTag = tag.cloneNode(true);
+        tags.setAttribute('data-number', ++number);
+        newTag.setAttribute('id', 'tag' + number);
+        newTag.value = "";
+        tag.after(newTag);
+    }
 </script>
 
 
 <div class="post">
-    <h2 th:text="${post.post.title}"></h2>
-    <button class="btn-add" onclick="editPost()">Редактировать пост</button>
+    <button class="btn-add" onclick="showPostForm()">Редактировать пост</button>
+    <div class="form-container" style="display: none;" id="postForm">
+        <form th:action="@{/post/{postId}(postId=${post.post.id})}" method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="title">Заголовок</label>
+                <input type="text" id="title" name="title" required="required" th:value="${post.post.title}"/>
+            </div>
+
+            <div>
+                <label for="text">Текст поста</label>
+                <textarea id="text" name="text" cols="50" rows="10" th:text="${post.post.text}"></textarea>
+            </div>
+
+            <div id="images">
+                <input type="file" name="images" multiple/>
+            </div>
+
+            <div id="tags" th:attr="data-number=${#sets.size(post.tags) - 1}">
+                <input th:each="tag, number : ${post.tags}" type="text" name="tags" th:value="${tag}" th:attr="id='tag' + ${number.index}"/>
+                <button type="button" class="btn-add" onclick="addTagInput()">Ещё один тег</button>
+            </div>
+
+            <button type="submit">Сохранить</button>
+        </form>
+    </div>
+
     <button class="btn-add" th:attr="onclick=|deletePost(${post.post.id})|">Удалить пост</button>
+
+    <h2 th:text="${post.post.title}"></h2>
     <div th:text="'Лайков: ' + ${post.likesCount}"></div>
     <form th:action="@{/post/{postId}/like(postId=${post.post.id})}" method="POST">
         <button type="submit">Мне нравится!</button>
     </form>
+
     <pre class="post-text" th:text="${post.post.text}"></pre>
     <div th:each="image : ${images}">
         <img th:src="${image}" alt="Тут должна быть картинка" height="300px"/>
@@ -89,6 +132,7 @@
     <br>
     <div th:text="'Комментариев: ' + ${post.commentsCount}"></div>
 </div>
+
 
 </body>
 </html>
