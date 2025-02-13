@@ -10,6 +10,7 @@ import ru.yandex.praktikum.blog.utils.FileManager;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/post")
@@ -48,6 +49,7 @@ public class PostController {
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
             @RequestParam(value = "tags", required = false) Set<String> tags
     ) {
+        tags = filterTags(tags);
         var imageNames = images.stream()
                 .filter(fileManager::validateFile)
                 .map(fileManager::saveFile)
@@ -64,6 +66,7 @@ public class PostController {
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
             @RequestParam(value = "tags", required = false) Set<String> tags
     ) {
+        tags = filterTags(tags);
         var imageNames = images.stream()
                 .filter(fileManager::validateFile)
                 .map(fileManager::saveFile)
@@ -82,5 +85,13 @@ public class PostController {
     public String likePost(@PathVariable(value = "id") long postId) {
         postService.likePost(postId);
         return "redirect:/post/" + postId;
+    }
+
+    private Set<String> filterTags(Set<String> tags) {
+        return tags.stream().filter(this::validateTag).collect(Collectors.toSet());
+    }
+
+    private boolean validateTag(String tag) {
+        return tag != null && !tag.isBlank();
     }
 }
