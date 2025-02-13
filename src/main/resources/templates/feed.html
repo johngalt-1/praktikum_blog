@@ -114,7 +114,9 @@
 <div>
     <div th:each="post : ${posts}">
         <div class="post">
-            <h2 th:text="${post.post.title}"></h2>
+            <h2>
+                <a th:text="${post.post.title}" th:href="@{/post/{postId}(postId=${post.post.id})}"></a>
+            </h2>
             <pre class="post-text" th:text="${post.post.text}"></pre>
             <div th:each="image : ${post.post.images}">
                 <img th:src="${image}" alt="Тут должна быть картинка" height="300px"/>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${post.post.title}"></title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .post {
+            border: 2px solid green;
+            margin-bottom: 50px;
+        }
+        .post-text {
+            height: 3em;
+            overflow: hidden
+        }
+        .actions {
+            text-align: center;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="number"], input[type="checkbox"] {
+            width: 10%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .btn-add {
+            margin-bottom: 20px;
+        }
+        pre {
+           font-size: 15px;
+           padding: 10px;
+        }
+        .tags {
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<script>
+    function deletePost(postId) {
+        let root = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
+        console.log(root);
+        let url = root + '/post/' + postId;
+        console.log(url);
+
+        fetch(url, {
+            method: "DELETE"
+        }).then((response) =>  window.location.replace(response.url));
+    }
+</script>
+
+
+<div class="post">
+    <h2 th:text="${post.post.title}"></h2>
+    <button class="btn-add" onclick="editPost()">Редактировать пост</button>
+    <button class="btn-add" th:attr="onclick=|deletePost(${post.post.id})|">Удалить пост</button>
+    <div th:text="'Лайков: ' + ${post.likesCount}"></div>
+    <form th:action="@{/post/{postId}/like(postId=${post.post.id})}" method="POST">
+        <button type="submit">Мне нравится!</button>
+    </form>
+    <pre class="post-text" th:text="${post.post.text}"></pre>
+    <div th:each="image : ${images}">
+        <img th:src="${image}" alt="Тут должна быть картинка" height="300px"/>
+    </div>
+    <div class="tags" th:each="tag : ${post.tags}">
+        <a style="float: left; margin-right: 10px" th:text="'#' + ${tag}" th:href="@{/(tag=${tag})}"></a>
+    </div>
+    <br>
+    <div th:text="'Комментариев: ' + ${post.commentsCount}"></div>
+</div>
+
+</body>
+</html>
