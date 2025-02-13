@@ -134,8 +134,9 @@
                 <input type="file" name="images" multiple/>
             </div>
 
-            <div id="tags" th:attr="data-number=${#sets.size(post.tags) - 1}">
-                <input th:each="tag, number : ${post.tags}" type="text" name="tags" th:value="${tag}" th:attr="id='tag' + ${number.index}"/>
+            <div id="tags" th:with="number=${post.tags == null ? 0 : (#sets.size(post.tags) - 1)}" th:attr="data-number=${number}">
+                <input th:each="tag, iter : ${post.tags}" type="text" name="tags" th:value="${tag}" th:attr="id='tag' + ${iter.index}"/>
+                <input type="text" name="tags" th:attr="id='tag' + ${number}"/>
                 <button type="button" class="btn-add" onclick="addTagInput()">Ещё один тег</button>
             </div>
 
