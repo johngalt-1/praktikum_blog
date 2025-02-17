@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${post.post.title}"></title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .post {
+            border: 2px solid green;
+            margin-bottom: 50px;
+        }
+        .comment {
+            border: 2px solid green;
+            margin-bottom: 50px;
+        }
+        .actions {
+            text-align: center;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="number"], input[type="checkbox"] {
+            width: 10%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .btn-add {
+            margin-bottom: 20px;
+        }
+        pre {
+           font-size: 15px;
+           padding: 10px;
+        }
+        .tags {
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<script>
+    document.body.addEventListener('keydown', (event) => {
+        if(event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+            event.target.form?.submit();
+        }
+    });
+
+    function deletePost(url) {
+        fetch(url, {
+            method: "DELETE"
+        }).then((response) => window.location.replace(response.url));
+    }
+
+    function deleteComment(url, commentId) {
+        fetch(url, {
+            method: "DELETE"
+        });
+        let comment = document.getElementById('comment' + commentId);
+        comment.remove();
+    }
+
+    function showPostForm() {
+        const form = document.getElementById('postForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function showCommentForm() {
+        const form = document.getElementById('commentForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function showEditCommentForm() {
+        let text = document.getElementById('commentCurrentText');
+        let form = document.getElementById('editCommentForm');
+        text.style.display = text.style.display === 'none' ? 'block' : 'none';
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function addTagInput() {
+        let tags = document.getElementById('tags');
+        let number = tags.getAttribute('data-number');
+        let tag = document.getElementById('tag' + number);
+        let newTag = tag.cloneNode(true);
+        tags.setAttribute('data-number', ++number);
+        newTag.setAttribute('id', 'tag' + number);
+        newTag.value = "";
+        tag.after(newTag);
+    }
+</script>
+
+<a th:href="@{/}">На главную</a>
+<div class="post">
+    <button class="btn-add" onclick="showPostForm()">Редактировать пост</button>
+    <div class="form-container" style="display: none;" id="postForm">
+        <form th:action="@{/post/{postId}(postId=${post.post.id})}" method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="title">Заголовок</label>
+                <input type="text" id="title" name="title" required="required" th:value="${post.post.title}"/>
+            </div>
+
+            <div>
+                <label for="text">Текст поста</label>
+                <textarea id="text" name="text" cols="50" rows="10" th:text="${post.post.text}"></textarea>
+            </div>
+
+            <div id="images">
+                <input type="file" name="images" multiple/>
+            </div>
+
+            <div id="tags" th:with="number=${post.tags == null ? 0 : (#sets.size(post.tags) - 1)}" th:attr="data-number=${number}">
+                <input th:each="tag, iter : ${post.tags}" type="text" name="tags" th:value="${tag}" th:attr="id='tag' + ${iter.index}"/>
+                <input type="text" name="tags" th:attr="id='tag' + ${number}"/>
+                <button type="button" class="btn-add" onclick="addTagInput()">Ещё один тег</button>
+            </div>
+
+            <button type="submit">Сохранить</button>
+        </form>
+    </div>
+
+    <button class="btn-add" th:with= "url = @{/post/{postId}(postId=${post.post.id})}" th:attr="onclick=|deletePost('${url}')|">Удалить пост</button>
+
+    <h2 th:text="${post.post.title}"></h2>
+    <div th:text="'Лайков: ' + ${post.likesCount}"></div>
+    <form th:action="@{/post/{postId}/like(postId=${post.post.id})}" method="POST">
+        <button type="submit">Мне нравится!</button>
+    </form>
+
+    <pre class="post-text" th:text="${post.post.text}"></pre>
+    <div th:each="image : ${images}">
+        <img th:src="${image}" alt="Тут должна быть картинка" height="300px"/>
+    </div>
+    <div class="tags" th:each="tag : ${post.tags}">
+        <a style="float: left; margin-right: 10px" th:text="'#' + ${tag}" th:href="@{/(tag=${tag})}"></a>
+    </div>
+    <br>
+</div>
+
+<div>
+    <div th:text="'Комментариев: ' + ${post.commentsCount}"></div>
+
+    <button class="btn-add" onclick="showCommentForm()">Добавить комментарий</button>
+    <div class="form-container" style="display: none;" id="commentForm">
+        <form th:action="@{/comment}" method="POST">
+            <div>
+                <label for="comment-text">Текст комментария</label>
+                <textarea id="comment-text" name="text" cols="50" rows="10"></textarea>
+                <input hidden="hidden" name="postId" th:value="${post.post.id}">
+            </div>
+            <button type="submit">Сохранить</button>
+        </form>
+    </div>
+
+    <div th:each="comment : ${comments}" class="comment" th:attr="id='comment' + ${comment.id}">
+        <button class="btn-add" th:with="url=@{/comment/{commentId}(commentId=${comment.id})}" th:attr="onclick=|deleteComment('${url}', ${comment.id})|">Удалить комментарий</button>
+        <button class="btn-add" th:attr="onclick=|showEditCommentForm()|">Редактировать комментарий</button>
+        <pre class="comment-text" id="commentCurrentText" th:text="${comment.text}"></pre>
+
+        <div class="form-container" style="display: none;" id="editCommentForm">
+            <form th:action="@{/comment/{commentId}(commentId=${comment.id})}" method="POST">
+                <div>
+                    <textarea name="text" cols="50" rows="10" th:text="${comment.text}"></textarea>
+                    <input hidden="hidden" name="postId" th:value="${post.post.id}">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
