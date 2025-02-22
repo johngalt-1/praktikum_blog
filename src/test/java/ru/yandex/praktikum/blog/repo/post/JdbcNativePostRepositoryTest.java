@@ -8,10 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextHierarchy;
 import ru.yandex.praktikum.blog.DatabaseTest;
-import ru.yandex.praktikum.blog.config.DatabaseConfig;
 import ru.yandex.praktikum.blog.model.Post;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
 
@@ -24,10 +21,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 
-@ContextHierarchy({
-        @ContextConfiguration(name = "db", classes = DatabaseConfig.class),
-        @ContextConfiguration(name = "repo", classes = JdbcNativePostRepository.class)
-})
+
 class JdbcNativePostRepositoryTest extends DatabaseTest {
 
     @Autowired
@@ -163,7 +157,7 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
         var text = "текст";
         var images = List.of("image5.jpg", "image6.png");
 
-        var timestamp = OffsetDateTime.now();
+        var timestamp = OffsetDateTime.now().minusSeconds(1);
         long id = postRepository.savePost(title, text, images);
         var foundPost = postRepository.findPostWithDetailsById(id).orElse(null);
         assertNotNull(foundPost);
@@ -181,7 +175,7 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
         post.setTitle("Новый заголовок");
         post.setImages(List.of("image1.jpg", "image10.png"));
 
-        var timestamp = OffsetDateTime.now();
+        var timestamp = OffsetDateTime.now().minusSeconds(1);
         postRepository.updatePost(post.getId(), post.getTitle(), post.getText(), post.getImages());
         var foundPost = postRepository.findPostWithDetailsById(FIRST_POST.getPost().getId()).orElse(null);
         assertNotNull(foundPost);
@@ -194,7 +188,7 @@ class JdbcNativePostRepositoryTest extends DatabaseTest {
     void deletePost() {
         var post = FIRST_POST.getPost();
 
-        var timestamp = OffsetDateTime.now();
+        var timestamp = OffsetDateTime.now().minusSeconds(1);
         postRepository.deletePost(post.getId());
         var foundPost = postRepository.findPostWithDetailsById(FIRST_POST.getPost().getId()).orElse(null);
         assertNotNull(foundPost);

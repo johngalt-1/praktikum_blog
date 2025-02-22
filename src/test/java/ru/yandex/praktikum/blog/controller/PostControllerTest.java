@@ -3,11 +3,8 @@ package ru.yandex.praktikum.blog.controller;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextHierarchy;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import ru.yandex.praktikum.blog.config.ThymeleafConfiguration;
 import ru.yandex.praktikum.blog.model.Post;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
 
@@ -23,10 +20,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@ContextHierarchy({
-        @ContextConfiguration(name = "web", classes = {ControllersTestConfig.class, ThymeleafConfiguration.class}),
-        @ContextConfiguration(name = "controller", classes = PostController.class)
-})
 class PostControllerTest extends ControllerTest {
 
     @Test
