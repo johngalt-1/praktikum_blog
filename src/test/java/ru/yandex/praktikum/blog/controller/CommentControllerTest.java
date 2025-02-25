@@ -1,9 +1,6 @@
 package ru.yandex.praktikum.blog.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextHierarchy;
-import ru.yandex.praktikum.blog.config.ThymeleafConfiguration;
 
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -12,10 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@ContextHierarchy({
-        @ContextConfiguration(name = "web", classes = {ControllersTestConfig.class, ThymeleafConfiguration.class}),
-        @ContextConfiguration(name = "controller", classes = CommentController.class)
-})
 class CommentControllerTest extends ControllerTest {
 
     @Test

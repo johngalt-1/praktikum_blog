@@ -2,21 +2,14 @@ package ru.yandex.praktikum.blog.repo.like;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextHierarchy;
 import ru.yandex.praktikum.blog.DatabaseTest;
-import ru.yandex.praktikum.blog.config.DatabaseConfig;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
-import ru.yandex.praktikum.blog.repo.post.JdbcNativePostRepository;
 import ru.yandex.praktikum.blog.repo.post.PostRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ContextHierarchy({
-        @ContextConfiguration(name = "db", classes = DatabaseConfig.class),
-        @ContextConfiguration(name = "repo", classes = {JdbcNativeLikeRepository.class, JdbcNativePostRepository.class})
-})
+
 class JdbcNativeLikeRepositoryTest extends DatabaseTest {
 
     @Autowired

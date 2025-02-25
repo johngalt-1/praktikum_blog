@@ -4,9 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextHierarchy;
-import ru.yandex.praktikum.blog.config.ThymeleafConfiguration;
 import ru.yandex.praktikum.blog.model.Post;
 import ru.yandex.praktikum.blog.model.PostWithDetails;
 
@@ -19,10 +16,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ContextHierarchy({
-        @ContextConfiguration(name = "web", classes = {ControllersTestConfig.class, ThymeleafConfiguration.class}),
-        @ContextConfiguration(name = "controller", classes = FeedController.class)
-})
+
 class FeedControllerTest extends ControllerTest {
 
     @Test
@@ -40,7 +34,6 @@ class FeedControllerTest extends ControllerTest {
         when(postService.findPostsWithDetails(any())).thenReturn(
                 new PageImpl<>(List.of(postWithDetails1, postWithDetails2))
         );
-        doCallRealMethod().when(fileManager).getFileUrl(any());
 
         testUrl("/?pageSize=3&pageNumber=0");
 
@@ -54,7 +47,6 @@ class FeedControllerTest extends ControllerTest {
     @ValueSource(strings = {"тег1", "тег2"})
     void searchByTag(String tag) throws Exception {
         when(postService.findPostsWithDetailsByTag(eq(tag), any())).thenReturn(new PageImpl<>(Collections.emptyList()));
-        doCallRealMethod().when(fileManager).getFileUrl(any());
 
         testUrl("/?pageSize=2&pageNumber=0&tag=" + tag);
 

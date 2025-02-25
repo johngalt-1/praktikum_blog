@@ -7,13 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextHierarchy;
 import ru.yandex.praktikum.blog.DatabaseTest;
-import ru.yandex.praktikum.blog.config.DatabaseConfig;
-import ru.yandex.praktikum.blog.repo.like.JdbcNativeLikeRepository;
-import ru.yandex.praktikum.blog.repo.post.JdbcNativePostRepository;
-import ru.yandex.praktikum.blog.repo.tag.JdbcNativeTagRepository;
 
 import java.util.List;
 import java.util.Set;
@@ -21,15 +15,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ContextHierarchy({
-        @ContextConfiguration(name = "db", classes = DatabaseConfig.class),
-        @ContextConfiguration(name = "service", classes = {
-                PostService.class,
-                JdbcNativePostRepository.class,
-                JdbcNativeLikeRepository.class,
-                JdbcNativeTagRepository.class
-        })
-})
+
 class PostServiceTest extends DatabaseTest {
 
     @Autowired

@@ -2,20 +2,27 @@ package ru.yandex.praktikum.blog;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextHierarchy;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.yandex.praktikum.blog.config.DatabaseConfig;
+import ru.yandex.praktikum.blog.repo.comment.JdbcNativeCommentRepository;
+import ru.yandex.praktikum.blog.repo.like.JdbcNativeLikeRepository;
+import ru.yandex.praktikum.blog.repo.post.JdbcNativePostRepository;
+import ru.yandex.praktikum.blog.repo.tag.JdbcNativeTagRepository;
+import ru.yandex.praktikum.blog.service.post.PostService;
 
-@ExtendWith(SpringExtension.class)
-@ContextHierarchy({
-        @ContextConfiguration(name = "db", classes = DatabaseConfig.class),
+
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ContextConfiguration(classes = {
+        PostService.class,
+        JdbcNativePostRepository.class,
+        JdbcNativeLikeRepository.class,
+        JdbcNativeTagRepository.class,
+        JdbcNativeCommentRepository.class
 })
-@TestPropertySource(locations = "classpath:properties/application.properties")
 public class DatabaseTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;

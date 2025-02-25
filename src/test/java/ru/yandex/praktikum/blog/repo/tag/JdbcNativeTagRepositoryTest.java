@@ -2,20 +2,13 @@ package ru.yandex.praktikum.blog.repo.tag;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextHierarchy;
 import ru.yandex.praktikum.blog.DatabaseTest;
-import ru.yandex.praktikum.blog.config.DatabaseConfig;
-import ru.yandex.praktikum.blog.repo.post.JdbcNativePostRepository;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ContextHierarchy({
-        @ContextConfiguration(name = "db", classes = DatabaseConfig.class),
-        @ContextConfiguration(name = "repo", classes = {JdbcNativeTagRepository.class, JdbcNativePostRepository.class})
-})
+
 class JdbcNativeTagRepositoryTest extends DatabaseTest {
 
     @Autowired

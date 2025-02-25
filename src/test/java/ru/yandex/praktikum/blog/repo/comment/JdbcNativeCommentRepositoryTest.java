@@ -7,9 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextHierarchy;
 import ru.yandex.praktikum.blog.DatabaseTest;
-import ru.yandex.praktikum.blog.config.DatabaseConfig;
 import ru.yandex.praktikum.blog.model.Comment;
 
 import java.time.OffsetDateTime;
@@ -20,10 +18,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 
-@ContextHierarchy({
-        @ContextConfiguration(name = "db", classes = DatabaseConfig.class),
-        @ContextConfiguration(name = "repo", classes = JdbcNativeCommentRepository.class)
-})
+
 class JdbcNativeCommentRepositoryTest extends DatabaseTest {
 
     @Autowired
@@ -102,7 +97,7 @@ class JdbcNativeCommentRepositoryTest extends DatabaseTest {
     void savePost() {
         jdbcTemplate.update("DELETE FROM blog.comment");
 
-        var timestamp = OffsetDateTime.now();
+        var timestamp = OffsetDateTime.now().minusSeconds(1);
         long id = commentRepository.saveComment(3, "Новый коммент");
         var foundComment = commentRepository.findCommentById(id).orElse(null);
         assertNotNull(foundComment);
@@ -114,7 +109,7 @@ class JdbcNativeCommentRepositoryTest extends DatabaseTest {
 
     @Test
     void updatePost() {
-        var timestamp = OffsetDateTime.now();
+        var timestamp = OffsetDateTime.now().minusSeconds(1);
         commentRepository.updateComment(1, "Первый комментарий с правками");
         var foundComment = commentRepository.findCommentById(1).orElse(null);
         assertNotNull(foundComment);
@@ -125,7 +120,7 @@ class JdbcNativeCommentRepositoryTest extends DatabaseTest {
 
     @Test
     void deletePost() {
-        var timestamp = OffsetDateTime.now();
+        var timestamp = OffsetDateTime.now().minusSeconds(1);
         commentRepository.deleteComment(1);
         var foundComment = commentRepository.findCommentById(1).orElse(null);
         assertNotNull(foundComment);
